@@ -8,7 +8,8 @@
       <FilterBar :isMobileView="isMobileView" />
       <SideBar v-if="isSideBarOpen" />
       <main>
-        <Suggestions :isMobileView="isMobileView" />
+        <EmptySuggestions v-if="sortedProductRequests.length < 1" />
+        <Suggestions :isMobileView="isMobileView" v-else />
       </main>
     </div>
 
@@ -23,6 +24,9 @@ import {
 import Suggestions from '@/components/Suggestions.vue';
 import SideBar from '@/components/SideBar.vue';
 import DeskTopStatusBar from '@/components/DeskTopStatusBar.vue';
+import EmptySuggestions from '@/components/EmptySuggestions.vue';
+import { useStore } from 'vuex';
+import { ProductRequest, RootState } from '@/store/types';
 import MobileHeader from '../components/MobileHeader.vue';
 import FilterBar from '../components/FilterBar.vue';
 
@@ -34,10 +38,15 @@ export default defineComponent({
     Suggestions,
     SideBar,
     DeskTopStatusBar,
+    EmptySuggestions,
   },
   setup() {
-    const isSideBarOpen = ref(false);
-    const viewportWidth = ref(window.innerWidth);
+    const isSideBarOpen = ref<boolean>(false);
+    const viewportWidth = ref<number>(window.innerWidth);
+    const store = useStore<RootState>();
+
+    const sortedProductRequests = computed<ProductRequest[]>(() => store.getters[
+      'filterAndSortModule/sortedProductRequests']);
 
     const handleResize = () => {
       viewportWidth.value = window.innerWidth;
@@ -62,6 +71,7 @@ export default defineComponent({
       toggleSideBar,
       viewportWidth,
       isMobileView,
+      sortedProductRequests,
     };
   },
 });

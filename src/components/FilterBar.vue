@@ -2,33 +2,59 @@
   <article :class="$style.filterBar">
     <div>
       <span v-if="!isMobileView">
-        <img src="../assets/bulb.svg" alt="bulb" />
+        <BulbIcon />
         6 Suggestions
       </span>
       <label for="sort">
         Sort By :
-        <select id="sort" name="sortBy" value="">
-          <option value="">Most Upvotes</option>
-          <option value="">Least Upvotes</option>
-          <option value="">Most Comments</option>
-          <option value="">Least Comments</option>
+        <select id="sort" name="sortBy" v-model="selectedSortType" @change="updateSortType">
+          <option value="mostUpvotes">Most Upvotes</option>
+          <option value="leastUpvotes">Least Upvotes</option>
+          <option value="mostComments">Most Comments</option>
+          <option value="leastComments">Least Comments</option>
         </select>
       </label>
     </div>
-    <button type="submit">+ Add Feedback</button>
+    <button type="submit" @click="goToCreateFeedback">+ Add Feedback</button>
   </article>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { PropType, defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { RootState } from '@/store/types';
+import BulbIcon from '../assets/svgComponents/bulb-icon.vue';
 
 export default defineComponent({
   name: 'FilterBar',
   props: {
     isMobileView: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       required: true,
     },
+  },
+  components: {
+    BulbIcon,
+  },
+  setup() {
+    const router = useRouter();
+    const store = useStore<RootState>();
+    const selectedSortType = ref<string>('mostUpvotes');
+
+    const goToCreateFeedback = () => {
+      router.push('create-new-feedback');
+    };
+
+    const updateSortType = () => {
+      store.commit('filterAndSortModule/setSortType', selectedSortType.value);
+    };
+
+    return {
+      goToCreateFeedback,
+      selectedSortType,
+      updateSortType,
+    };
   },
 });
 </script>
@@ -63,6 +89,7 @@ export default defineComponent({
       color: $white;
       font-size: 0.8rem;
       font-weight: 400;
+      cursor: pointer;
 
       select {
         background-color: $dark-blue;
@@ -71,6 +98,16 @@ export default defineComponent({
         width: 7rem;
         font-size: 0.8rem;
         font-weight: 600;
+        cursor: pointer;
+      }
+    }
+
+    label:hover {
+      color: #F2F4FE;
+
+      select:hover {
+        color: #F2F4FE;
+
       }
     }
 
@@ -85,6 +122,12 @@ export default defineComponent({
     width: 8rem;
     border: none;
     border-radius: 0.625rem;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: $active-purple;
+    color: $active-white
   }
 }
 

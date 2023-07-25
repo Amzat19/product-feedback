@@ -4,15 +4,15 @@
       <span>Product Feedback App</span>
       <span>Feedback Board</span>
     </div>
-    <img v-if="isSideBarOpen" @click="toggleSideBar" @keydown="toggleSideBarOnEnter" src="../assets/close.svg"
-      alt="Close sidebar logo" />
-    <img v-else @click="toggleSideBar" @keydown="toggleSideBarOnEnter" src="../assets/hamburger.svg"
-      alt="Open sidebar logo" />
+    <CloseIcon v-if="isSideBarOpen" @click="toggleSideBar" @keydown.enter="toggleSideBar" />
+    <HamburgerIcon v-else @click="toggleSideBar" @keydown.escape="toggleSideBar" />
   </header>
 </template>
 
 <script lang="ts">
 import { PropType, SetupContext, defineComponent } from 'vue';
+import CloseIcon from '../assets/svgComponents/close-icon.vue';
+import HamburgerIcon from '../assets/svgComponents/hamburger-icon.vue';
 
 export default defineComponent({
   name: 'MobileHeader',
@@ -22,20 +22,17 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    CloseIcon,
+    HamburgerIcon,
+  },
   setup(props, ctx: SetupContext) {
     const toggleSideBar = () => {
       ctx.emit('toggle-sidebar');
     };
 
-    const toggleSideBarOnEnter = (event: KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        ctx.emit('toggle-sidebar');
-      }
-    };
-
     return {
       toggleSideBar,
-      toggleSideBarOnEnter,
     };
   },
 });
@@ -76,9 +73,11 @@ export default defineComponent({
     }
   }
 
-  img {
+  svg {
     width: 20px;
     height: 17px;
+    cursor: pointer;
   }
+
 }
 </style>
